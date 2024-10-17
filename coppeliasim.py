@@ -90,14 +90,13 @@ class Robot(CoppeliaSim):
         self.set_position(pos)
         if wait:
             while True:
-                time.sleep(0.05)
-                if self.isMoving() == 'NOT_MOVING':
+                time.sleep(0.1)
+                if self.isMoving() == 0:
                     break
 
     # Check whether the robot is moving
     def isMoving(self):
-        ret, s = sim.simxGetStringSignal(self.clientID, 'test_signal', sim.simx_opmode_buffer)
-        s = s.decode('ascii')
+        ret, s = sim.simxGetInt32Signal(self.clientID, 'moving_status', sim.simx_opmode_buffer)
         return s
 
     # Set Robot Speed: 0 - 100
@@ -105,7 +104,7 @@ class Robot(CoppeliaSim):
         ret = sim.simxCallScriptFunction(self.clientID, self.script,
                                          sim.sim_scripttype_childscript,
                                          'remoteApi_setSpeed',
-                                         velocity, [], [], '',
+                                         [velocity], [], [], '',
                                          sim.simx_opmode_blocking)
 
     # Set Robot Gripper ON-OFF
